@@ -43,16 +43,6 @@
         </button>
     </div>
 
-    <!-- 视频鉴权遮罩层 -->
-<div id="videoAuthOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; z-index:10;">
-  <div style="background:white; padding:20px; border-radius:10px;">
-    <p>请输入密码观看视频：</p>
-    <input type="password" id="videoPasswordInput">
-    <button onclick="checkVideoPassword()">确认</button>
-    <p id="videoPasswordError" style="color:red; display:none;">密码错误</p>
-  </div>
-</div>
-
     <!-- 设置按钮保留在右上角 -->
     <div class="fixed top-4 right-4 z-50">
         <button onclick="toggleSettings(event)" class="bg-[#222] hover:bg-[#333] border border-[#333] hover:border-white rounded-lg px-4 py-2 transition-colors" aria-label="打开设置">
@@ -323,44 +313,27 @@
     <script src="js/api.js"></script>
     <script src="js/app.js"></script>
 
-<script>
-  // 视频密码设定
-  const videoPassword = "PlayMe";
-
-  document.addEventListener('DOMContentLoaded', function () {
-    // 处理免责声明弹窗显示逻辑
-    const hasSeenDisclaimer = localStorage.getItem('hasSeenDisclaimer');
-    const disclaimerModal = document.getElementById('disclaimerModal');
-
-    if (!hasSeenDisclaimer && disclaimerModal) {
-      disclaimerModal.style.display = 'flex';
-      const acceptBtn = document.getElementById('acceptDisclaimerBtn');
-      if (acceptBtn) {
-        acceptBtn.addEventListener('click', function () {
-          localStorage.setItem('hasSeenDisclaimer', 'true');
-          disclaimerModal.style.display = 'none';
+    <!-- 弹窗显示脚本 -->
+    <script>
+        // 在页面加载完成后检查用户是否首次访问
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查用户是否已经看过声明
+            const hasSeenDisclaimer = localStorage.getItem('hasSeenDisclaimer');
+            
+            if (!hasSeenDisclaimer) {
+                // 显示弹窗
+                const disclaimerModal = document.getElementById('disclaimerModal');
+                disclaimerModal.style.display = 'flex';
+                
+                // 添加接受按钮事件
+                document.getElementById('acceptDisclaimerBtn').addEventListener('click', function() {
+                    // 保存用户已看过声明的状态
+                    localStorage.setItem('hasSeenDisclaimer', 'true');
+                    // 隐藏弹窗
+                    disclaimerModal.style.display = 'none';
+                });
+            }
         });
-      }
-    }
-
-    // 添加视频密码验证按钮事件（如果存在）
-    const checkPasswordBtn = document.getElementById('checkVideoPasswordBtn');
-    if (checkPasswordBtn) {
-      checkPasswordBtn.addEventListener('click', function () {
-        const input = document.getElementById("videoPasswordInput").value;
-        const error = document.getElementById("videoPasswordError");
-        const overlay = document.getElementById("videoAuthOverlay");
-        const video = document.getElementById("myVideo");
-
-        if (input === videoPassword) {
-          if (overlay) overlay.style.display = "none";
-          if (video) video.play();
-        } else {
-          if (error) error.style.display = "block";
-        }
-      });
-    }
-  });
-</script>
+    </script>
 </body>
 </html>
