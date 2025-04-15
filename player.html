@@ -174,15 +174,101 @@
             </div>
         </div>
 
+  <style>
+    /* 鉴权遮罩层样式 */
+    #authOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #authOverlay div {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    #authError {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
 <!-- 鉴权遮罩层 -->
-<div id="authOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-  <div style="background: #fff; padding: 20px; border-radius: 10px;">
-    <p>请输入访问密码：</p>
-    <input type="password" id="authPassword" />
+<div id="authOverlay">
+  <div>
+    <h3>请输入访问密码</h3>
+    <input type="password" id="authInput" placeholder="密码">
     <button onclick="checkAuth()">提交</button>
-    <p id="authError" style="color: red; display: none;">密码错误，请重试。</p>
+    <p id="authError">密码错误，请重试</p>
   </div>
 </div>
+
+<!-- 播放器容器（实际播放视频） -->
+<video id="videoPlayer" controls autoplay style="width: 100%; max-width: 800px; margin: 20px auto; display: block;">
+  您的浏览器不支持视频播放。
+</video>
+
+<script>
+  // 设置你的访问密码
+  const correctPassword = "123456";
+
+  // 检查密码，如果正确则隐藏鉴权层并加载播放器
+  function checkAuth() {
+    const input = document.getElementById("authInput").value;
+    const error = document.getElementById("authError");
+    
+    if (input === correctPassword) {
+      localStorage.setItem("accessGranted", "true");
+      document.getElementById("authOverlay").style.display = "none";
+      loadPlayer();
+    } else {
+      error.style.display = "block";
+    }
+  }
+
+  // 从URL参数获取视频地址，并加载到播放器中
+  function loadPlayer() {
+    // 解析 URL 查询参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get("url");
+    
+    if (videoUrl) {
+      const videoPlayer = document.getElementById("videoPlayer");
+      // 根据具体视频类型设置 type，例如 m3u8 流通常使用 "application/x-mpegURL"
+      const source = document.createElement("source");
+      source.src = videoUrl;
+      source.type = "application/x-mpegURL";
+      
+      videoPlayer.appendChild(source);
+      videoPlayer.load();
+      videoPlayer.play().catch(err => console.error(err));
+    } else {
+      console.error("没有找到视频地址参数！");
+    }
+  }
+
+  // 页面加载时检测 localStorage 中是否已有通过鉴权标志
+  window.addEventListener("load", () => {
+    if (localStorage.getItem("accessGranted") === "true") {
+      // 如已鉴权，则隐藏遮罩层并加载视频
+      document.getElementById("authOverlay").style.display = "none";
+      loadPlayer();
+    } else {
+      // 未通过鉴权时，始终显示鉴权遮罩
+      document.getElementById("authOverlay").style.display = "flex";
+    }
+  });
+</script>
 
 
         
