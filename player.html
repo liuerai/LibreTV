@@ -140,17 +140,23 @@
             opacity: 1;
         }
     </style>
-<!-- 密码验证弹窗 -->
+<!-- ✅ 密码验证弹窗 -->
 <div id="passwordOverlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
   <div class="bg-[#111827] p-8 rounded-2xl shadow-xl border border-gray-700 w-[90%] max-w-sm text-center">
-
+    <!-- Logo + 名称 -->
+    <div class="mb-6 flex justify-center items-center gap-2">
+      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+      </svg>
+      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500">LibreTV</h1>
+    </div>
 
     <p class="text-sm text-gray-300 mb-6">请输入访问密码以继续</p>
 
     <div class="text-left mb-3">
       <label class="text-sm text-gray-400">访问密码</label>
       <input type="password" id="accessPassword" placeholder="请输入访问密码"
-             class="mt-1 w-full px-4 py-2 rounded-md bg-[#1e293b] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+             class="mt-1 w-full px-4 py-2 rounded-md bg-[#1f2937] text-white border border-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-md" />
     </div>
 
     <button onclick="checkPassword()" 
@@ -1200,10 +1206,11 @@
             return `${encodeURIComponent(currentVideoTitle)}_${currentEpisodeIndex}`;
         }
     </script>
-  <script>
-  const correctPassword = "BiuXin"; // 修改为你自己的密码
-  const passwordKey = "access_granted";
+<script>
+  const correctPassword = "BiuXin"; // 设置访问密码
+  const passwordKey = "libretv_access_granted"; // 本地存储 key
 
+  // 点击按钮或回车时执行验证
   function checkPassword() {
     const input = document.getElementById("accessPassword").value;
     const error = document.getElementById("passwordError");
@@ -1212,27 +1219,31 @@
       localStorage.setItem(passwordKey, "true");
       document.getElementById("passwordOverlay").style.display = "none";
       document.body.style.overflow = "auto";
-      location.reload(); // 刷新页面以加载播放器
     } else {
       error.classList.remove("hidden");
     }
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
+  // 页面加载判断是否已验证
+  window.addEventListener("load", () => {
     const isGranted = localStorage.getItem(passwordKey);
+
     if (isGranted === "true") {
       document.getElementById("passwordOverlay").style.display = "none";
       document.body.style.overflow = "auto";
     } else {
       document.getElementById("passwordOverlay").style.display = "flex";
       document.body.style.overflow = "hidden";
-
-      // 防止视频自动加载
-      const videos = document.querySelectorAll('video, iframe, source');
-      videos.forEach(el => el.remove());
     }
+
+    // 监听回车键事件
+    const inputField = document.getElementById("accessPassword");
+    inputField.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        checkPassword();
+      }
+    });
   });
-</script>
-  
+</script>  
 </body>
 </html>
