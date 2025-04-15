@@ -255,13 +255,7 @@
         </div>
     </main>
 
-    <!-- 添加快捷键提示元素 -->
-    <div class="shortcut-hint" id="shortcutHint">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="shortcutIcon">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        <span id="shortcutText"></span>
-    </div>
+
 
     <script src="https://s4.zstatic.net/ajax/libs/hls.js/1.5.6/hls.min.js" integrity="sha256-X1GmLMzVcTBRiGjEau+gxGpjRK96atNczcLBg5w6hKA=" crossorigin="anonymous"></script>
     <script src="https://s4.zstatic.net/ajax/libs/dplayer/1.26.0/DPlayer.min.js" integrity="sha256-OJg03lDZP0NAcl3waC9OT5jEa8XZ8SM2n081Ik953o4=" crossorigin="anonymous"></script>
@@ -1207,10 +1201,9 @@
         }
     </script>
 <script>
-  const correctPassword = "BiuXin"; // 设置访问密码
-  const passwordKey = "libretv_access_granted"; // 本地存储 key
+  const correctPassword = "BiuXin"; // 修改为你自己的密码
+  const passwordKey = "access_granted";
 
-  // 点击按钮或回车时执行验证
   function checkPassword() {
     const input = document.getElementById("accessPassword").value;
     const error = document.getElementById("passwordError");
@@ -1219,31 +1212,35 @@
       localStorage.setItem(passwordKey, "true");
       document.getElementById("passwordOverlay").style.display = "none";
       document.body.style.overflow = "auto";
+      location.reload(); // 刷新页面以加载播放器
     } else {
       error.classList.remove("hidden");
     }
   }
 
-  // 页面加载判断是否已验证
-  window.addEventListener("load", () => {
+  window.addEventListener("DOMContentLoaded", () => {
     const isGranted = localStorage.getItem(passwordKey);
-
     if (isGranted === "true") {
       document.getElementById("passwordOverlay").style.display = "none";
       document.body.style.overflow = "auto";
     } else {
       document.getElementById("passwordOverlay").style.display = "flex";
       document.body.style.overflow = "hidden";
-    }
 
-    // 监听回车键事件
-    const inputField = document.getElementById("accessPassword");
-    inputField.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        checkPassword();
-      }
-    });
+      // 防止视频自动加载
+      const videos = document.querySelectorAll('video, iframe, source');
+      videos.forEach(el => el.remove());
+
+      // 回车键触发验证
+      const inputField = document.getElementById("accessPassword");
+      inputField.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          checkPassword();
+        }
+      });
+    }
   });
-</script>  
+</script>
+
 </body>
 </html>
