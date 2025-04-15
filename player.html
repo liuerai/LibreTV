@@ -140,57 +140,40 @@
             opacity: 1;
         }
     </style>
-</head>
-<body>
+<!-- 密码验证弹窗 -->
+<div id="passwordOverlay" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+  <div class="bg-[#111827] p-8 rounded-2xl shadow-xl border border-gray-700 w-[90%] max-w-sm text-center">
+    <!-- Logo + 名称 -->
+    <div class="mb-6 flex justify-center items-center gap-2">
+      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 6h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z"/>
+      </svg>
+      <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500">LibreTV</h1>
+    </div>
 
-<!-- 密码遮罩层 -->
-<div id="passwordOverlay">
-  <div class="password-box">
-    <h2>Libre<span style="color:#d946ef">TV</span></h2>
-    <p>请输入访问密码以继续</p>
-    <input type="password" id="passwordInput" placeholder="请输入访问密码" />
-    <button onclick="verifyPassword()">访问</button>
-    <div id="passwordError">密码错误</div>
+    <p class="text-sm text-gray-300 mb-6">请输入访问密码以继续</p>
+
+    <div class="text-left mb-3">
+      <label class="text-sm text-gray-400">访问密码</label>
+      <input type="password" id="accessPassword" placeholder="请输入访问密码"
+             class="mt-1 w-full px-4 py-2 rounded-md bg-[#1e293b] text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+    </div>
+
+    <button onclick="checkPassword()" 
+            class="w-full bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold py-2 rounded-md transition duration-300">
+      访问
+    </button>
+
+    <p id="passwordError" class="text-red-500 text-sm mt-3 hidden">密码错误，请重试</p>
+
+    <a href="https://blog.biuxin.com" target="_blank"
+       class="inline-block mt-4 text-sm px-4 py-2 rounded-md bg-gradient-to-r from-blue-500 to-pink-500 text-white hover:opacity-90">
+      密码是BiuXin
+    </a>
   </div>
 </div>
 
-<!-- 视频播放器 -->
-<video id="videoPlayer" controls autoplay>
-  <source id="videoSource" type="application/x-mpegURL">
-  您的浏览器不支持视频播放。
-</video>
-
-<script>
-  const correctPassword = "BiuXin";
-
-  function verifyPassword() {
-    const input = document.getElementById("passwordInput").value;
-    const error = document.getElementById("passwordError");
-
-    if (input === correctPassword) {
-      document.getElementById("passwordOverlay").style.display = "none";
-      loadVideo();
-    } else {
-      error.style.display = "block";
-    }
-  }
-
-  function loadVideo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoUrl = urlParams.get("url");
-
-    if (videoUrl) {
-      const player = document.getElementById("videoPlayer");
-      const source = document.getElementById("videoSource");
-
-      source.src = decodeURIComponent(videoUrl);
-      player.style.display = "block";
-      player.load();
-    } else {
-      alert("未提供视频地址！");
-    }
-  }
-</script>
+    
 </head>
 <body>
     <header class="bg-[#111] p-4 flex justify-between items-center border-b border-[#333]">
@@ -225,104 +208,6 @@
             </div>
         </div>
 
-  <style>
-    /* 鉴权遮罩层样式 */
-    #authOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    #authOverlay div {
-      background: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      text-align: center;
-    }
-    #authError {
-      color: red;
-      margin-top: 10px;
-      display: none;
-    }
-  </style>
-</head>
-<body>
-
-<!-- 鉴权遮罩层 -->
-<div id="authOverlay">
-  <div>
-    <h3>请输入访问密码</h3>
-    <input type="password" id="authInput" placeholder="密码">
-    <button onclick="checkAuth()">提交</button>
-    <p id="authError">密码错误，请重试</p>
-  </div>
-</div>
-
-<!-- 播放器容器（实际播放视频） -->
-<video id="videoPlayer" controls autoplay style="width: 100%; max-width: 800px; margin: 20px auto; display: block;">
-  您的浏览器不支持视频播放。
-</video>
-
-<script>
-  // 设置你的访问密码
-  const correctPassword = "123456";
-
-  // 检查密码，如果正确则隐藏鉴权层并加载播放器
-  function checkAuth() {
-    const input = document.getElementById("authInput").value;
-    const error = document.getElementById("authError");
-    
-    if (input === correctPassword) {
-      localStorage.setItem("accessGranted", "true");
-      document.getElementById("authOverlay").style.display = "none";
-      loadPlayer();
-    } else {
-      error.style.display = "block";
-    }
-  }
-
-  // 从URL参数获取视频地址，并加载到播放器中
-  function loadPlayer() {
-    // 解析 URL 查询参数
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoUrl = urlParams.get("url");
-    
-    if (videoUrl) {
-      const videoPlayer = document.getElementById("videoPlayer");
-      // 根据具体视频类型设置 type，例如 m3u8 流通常使用 "application/x-mpegURL"
-      const source = document.createElement("source");
-      source.src = videoUrl;
-      source.type = "application/x-mpegURL";
-      
-      videoPlayer.appendChild(source);
-      videoPlayer.load();
-      videoPlayer.play().catch(err => console.error(err));
-    } else {
-      console.error("没有找到视频地址参数！");
-    }
-  }
-
-  // 页面加载时检测 localStorage 中是否已有通过鉴权标志
-  window.addEventListener("load", () => {
-    if (localStorage.getItem("accessGranted") === "true") {
-      // 如已鉴权，则隐藏遮罩层并加载视频
-      document.getElementById("authOverlay").style.display = "none";
-      loadPlayer();
-    } else {
-      // 未通过鉴权时，始终显示鉴权遮罩
-      document.getElementById("authOverlay").style.display = "flex";
-    }
-  });
-</script>
-
-
-        
         <!-- 集数导航 -->
         <div class="player-container">
             <div class="flex justify-between items-center my-4">
@@ -397,21 +282,6 @@
         let adFilteringEnabled = true; // 默认开启广告过滤
         let progressSaveInterval = null; // 定期保存进度的计时器
 
-        const correctPassword = "123456"; // 设置你的密码
-
-        function checkAuth() {
-        const input = document.getElementById("authPassword").value;
-       const error = document.getElementById("authError");
-
-       if (input === correctPassword) {
-       document.getElementById("authOverlay").style.display = "none";
-       document.getElementById("myVideo").play(); // 自动播放视频
-     } else {
-      error.style.display = "block";
-    }
-  }
-
-        
         // 页面加载
         document.addEventListener('DOMContentLoaded', function() {
             // 解析URL参数
@@ -493,33 +363,6 @@
 
             // 添加页面离开事件监听，保存播放位置
             window.addEventListener('beforeunload', saveCurrentProgress);
-
-            // 新增：页面隐藏（切后台/切标签）时也保存
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    saveCurrentProgress();
-                }
-            });
-
-            // 新增：视频暂停时也保存
-            // 需确保 dp.video 已初始化
-            const waitForVideo = setInterval(() => {
-                if (dp && dp.video) {
-                    dp.video.addEventListener('pause', saveCurrentProgress);
-
-                    // 新增：播放进度变化时节流保存
-                    let lastSave = 0;
-                    dp.video.addEventListener('timeupdate', function() {
-                        const now = Date.now();
-                        if (now - lastSave > 5000) { // 每5秒最多保存一次
-                            saveCurrentProgress();
-                            lastSave = now;
-                        }
-                    });
-
-                    clearInterval(waitForVideo);
-                }
-            }, 200);
         });
 
         // 处理键盘快捷键
@@ -1322,11 +1165,14 @@
         
         // 保存当前播放进度
         function saveCurrentProgress() {
-            if (!dp || !dp.video) return;
+            if (!dp || !dp.video || dp.video.paused || videoHasEnded) return;
+            
+            // 如果播放进度太短或接近结尾，不保存
             const currentTime = dp.video.currentTime;
             const duration = dp.video.duration;
-            if (!duration || currentTime < 1) return;
-
+            
+            if (currentTime < 10 || currentTime > duration * 0.95) return;
+            
             // 在localStorage中保存进度
             const progressKey = `videoProgress_${getVideoId()}`;
             const progressData = {
@@ -1334,34 +1180,10 @@
                 duration: duration,
                 timestamp: Date.now()
             };
+            
             try {
                 localStorage.setItem(progressKey, JSON.stringify(progressData));
-                // --- 新增：同步更新 viewingHistory 中的进度 ---
-                try {
-                    const historyRaw = localStorage.getItem('viewingHistory');
-                    if (historyRaw) {
-                        const history = JSON.parse(historyRaw);
-                        // 用 title + 集数索引唯一标识
-                        const idx = history.findIndex(item =>
-                            item.title === currentVideoTitle &&
-                            (item.episodeIndex === undefined || item.episodeIndex === currentEpisodeIndex)
-                        );
-                        if (idx !== -1) {
-                            // 只在进度有明显变化时才更新，减少写入
-                            if (
-                                Math.abs((history[idx].playbackPosition || 0) - currentTime) > 2 ||
-                                Math.abs((history[idx].duration || 0) - duration) > 2
-                            ) {
-                                history[idx].playbackPosition = currentTime;
-                                history[idx].duration = duration;
-                                history[idx].timestamp = Date.now();
-                                localStorage.setItem('viewingHistory', JSON.stringify(history));
-                            }
-                        }
-                    }
-                } catch (e) {
-                    // 忽略 viewingHistory 更新错误
-                }
+                console.log(`已保存播放进度: ${formatTime(currentTime)} / ${formatTime(duration)}`);
             } catch (e) {
                 console.error('保存播放进度失败', e);
             }
@@ -1384,5 +1206,39 @@
             return `${encodeURIComponent(currentVideoTitle)}_${currentEpisodeIndex}`;
         }
     </script>
+  <script>
+  const correctPassword = "BiuXin"; // 修改为你自己的密码
+  const passwordKey = "access_granted";
+
+  function checkPassword() {
+    const input = document.getElementById("accessPassword").value;
+    const error = document.getElementById("passwordError");
+
+    if (input === correctPassword) {
+      localStorage.setItem(passwordKey, "true");
+      document.getElementById("passwordOverlay").style.display = "none";
+      document.body.style.overflow = "auto";
+      location.reload(); // 刷新页面以加载播放器
+    } else {
+      error.classList.remove("hidden");
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const isGranted = localStorage.getItem(passwordKey);
+    if (isGranted === "true") {
+      document.getElementById("passwordOverlay").style.display = "none";
+      document.body.style.overflow = "auto";
+    } else {
+      document.getElementById("passwordOverlay").style.display = "flex";
+      document.body.style.overflow = "hidden";
+
+      // 防止视频自动加载
+      const videos = document.querySelectorAll('video, iframe, source');
+      videos.forEach(el => el.remove());
+    }
+  });
+</script>
+  
 </body>
 </html>
