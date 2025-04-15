@@ -174,6 +174,18 @@
             </div>
         </div>
 
+<!-- 鉴权遮罩层 -->
+<div id="authOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+  <div style="background: #fff; padding: 20px; border-radius: 10px;">
+    <p>请输入访问密码：</p>
+    <input type="password" id="authPassword" />
+    <button onclick="checkAuth()">提交</button>
+    <p id="authError" style="color: red; display: none;">密码错误，请重试。</p>
+  </div>
+</div>
+
+
+        
         <!-- 集数导航 -->
         <div class="player-container">
             <div class="flex justify-between items-center my-4">
@@ -248,6 +260,21 @@
         let adFilteringEnabled = true; // 默认开启广告过滤
         let progressSaveInterval = null; // 定期保存进度的计时器
 
+        const correctPassword = "123456"; // 设置你的密码
+
+        function checkAuth() {
+        const input = document.getElementById("authPassword").value;
+       const error = document.getElementById("authError");
+
+       if (input === correctPassword) {
+       document.getElementById("authOverlay").style.display = "none";
+       document.getElementById("myVideo").play(); // 自动播放视频
+     } else {
+      error.style.display = "block";
+    }
+  }
+
+        
         // 页面加载
         document.addEventListener('DOMContentLoaded', function() {
             // 解析URL参数
